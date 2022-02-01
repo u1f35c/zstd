@@ -1300,7 +1300,10 @@ FIO_compressZstdFrame(FIO_ctx_t* const fCtx,
         int windowLog;
         UTIL_HumanReadableSize_t windowSize;
         CHECK(ZSTD_CCtx_getParameter(ress.cctx, ZSTD_c_windowLog, &windowLog));
-        if (windowLog == 0) {
+        if (prefs->ldmFlag) {
+            /* If long mode is set libzstd will set this window size internally */
+            windowLog = ZSTD_WINDOWLOG_LIMIT_DEFAULT;
+        } else if (windowLog == 0) {
             const ZSTD_compressionParameters cParams = ZSTD_getCParams(compressionLevel, fileSize, 0);
             windowLog = cParams.windowLog;
         }
